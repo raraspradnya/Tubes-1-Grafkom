@@ -23,7 +23,7 @@ var fragmentShaderText = [
   "}",
 ].join("\n");
 
-var size = 1;
+var length = 1;
 var canvas_width = 0;
 var canvas_height = 0;
 var u_xformMatrix;
@@ -35,15 +35,14 @@ var Index_Buffer;
 
 window.onload = function init() {
   draw(1);
-  document.getElementById("size").addEventListener("change", function() {
-    // console.log(document.getElementById("size").value);
-    size = document.getElementById("size").value;
-    document.getElementById("sizedisplay").innerHTML = size;
-    draw(size);
+  document.getElementById("length").addEventListener("change", function() {
+    console.log(document.getElementById("length").value);
+    length = document.getElementById("length").value;
+    draw(length);
   });
 }
 
-function draw(size){
+function draw(length){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
@@ -62,18 +61,14 @@ function draw(size){
 
   /*========== Defining and storing the geometry =========*/
 
-  var add = size * 0.1;
+  var add = length * 0.1;
   var minus = -0.1 - add;
   var plus = 0.1 + add;
 
-  var vertices =  [
-    minus, plus, 0.0,
-    minus, minus, 0.0,
-    plus, minus,0.0,
-    plus, plus, 0.0 
-  ];
-
-  indices = [3,2,1,3,1,0];
+  var vertices = [
+    minus,minus,0,
+    plus,plus,0
+ ]
 
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
@@ -86,18 +81,6 @@ function draw(size){
 
   // Unbind the buffer
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
-  // Create an empty buffer object to store Index buffer
-  Index_Buffer = gl.createBuffer();
-
-  // Bind appropriate array buffer to it
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
-
-  // Pass the vertex data to the buffer
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-
-  // Unbind the buffer
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   /*====================== Shaders =======================*/
 
@@ -168,9 +151,20 @@ function draw(size){
   // Enable the attribute
   gl.enableVertexAttribArray(coord);
 
-  // Draw the triangle
-  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT,0);
+  // Clear the canvas
+  gl.clearColor(0.5, 0.5, 0.5, 0.9);
 
+  // Enable the depth test
+  gl.enable(gl.DEPTH_TEST);
+
+  // Clear the color and depth buffer
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Set the view port
+  gl.viewport(0,0,canvas.width,canvas.height);
+
+  // Draw the triangle
+  gl.drawArrays(gl.LINES, 0, 2);
 }
 
 
