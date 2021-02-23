@@ -36,6 +36,14 @@ function get_vertices(size){
 }
 
 var size = 1;
+var canvas_width = 0;
+var canvas_height = 0;
+var u_xformMatrix;
+var vertex_buffer;
+var xformMatrix;
+var shaderProgram;
+var Index_Buffer;
+
 
 //buat debug
 function myFunction() {
@@ -44,21 +52,36 @@ function myFunction() {
 }
 
 
-
 window.onload = function init() {
-  myFunction();
-  
+  draw(1);
+  document.getElementById("size").addEventListener("change", function() {
+    console.log(document.getElementById("size").value);
+    size = document.getElementById("size").value;
+    document.getElementById("sizedisplay").innerHTML = size;
+    draw(size);
+  });
+}
+
+function draw(size){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
-  
-  document.getElementById("size").onchange = function(event) {
-    size = event.target.value;
-  };
+  canvas_height = canvas.height;
+  canvas_width = canvas.width;
 
   gl = canvas.getContext('experimental-webgl');
 
+  // Set the view port
+  gl.viewport(0,0,canvas_width,canvas_height);
+
+  // Clear the canvas
+  gl.clearColor(0.5, 0.5, 0.5, 0.9);
+
+  // Enable the depth test
+  gl.enable(gl.DEPTH_TEST);
+
   /*========== Defining and storing the geometry =========*/
 
+  // var size = 3;
   var add = size * 0.1;
   var minus = -0.1 - add;
   var plus = 0.1 + add;
@@ -70,10 +93,17 @@ window.onload = function init() {
     plus, plus, 0.0 
   ];
 
+  // var vertices =  [
+  //   -0.1, 0.1, 0.0,
+  //   -0.1, -0.1, 0.0,
+  //   0.1, -0.1,0.0,
+  //   0.1, 0.1, 0.0 
+  // ];
+
   indices = [3,2,1,3,1,0];
 
   // Create an empty buffer object to store vertex buffer
-  var vertex_buffer = gl.createBuffer();
+  vertex_buffer = gl.createBuffer();
 
   // Bind appropriate array buffer to it
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
@@ -85,7 +115,7 @@ window.onload = function init() {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   // Create an empty buffer object to store Index buffer
-  var Index_Buffer = gl.createBuffer();
+  Index_Buffer = gl.createBuffer();
 
   // Bind appropriate array buffer to it
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
@@ -131,7 +161,7 @@ window.onload = function init() {
 
   // Create a shader program object to
   // store the combined shader program
-  var shaderProgram = gl.createProgram();
+  shaderProgram = gl.createProgram();
 
   // Attach a vertex shader
   gl.attachShader(shaderProgram, vertShader);
@@ -150,6 +180,9 @@ window.onload = function init() {
   // Bind vertex buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 
+  // // Clear the color buffer bit
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
   // Bind index buffer object
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer); 
 
@@ -162,20 +195,9 @@ window.onload = function init() {
   // Enable the attribute
   gl.enableVertexAttribArray(coord);
 
-  /*============= Drawing the Quad ================*/
-
-  // Clear the canvas
-  gl.clearColor(0.5, 0.5, 0.5, 0.9);
-
-  // Enable the depth test
-  gl.enable(gl.DEPTH_TEST);
-
-  // Clear the color buffer bit
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  // Set the view port
-  gl.viewport(0,0,canvas.width,canvas.height);
-
   // Draw the triangle
   gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT,0);
+
 }
+
+
