@@ -44,18 +44,14 @@ function hexToRgb(hex) {
 window.onload = function init() {
   draw(1);
   document.getElementById("color").addEventListener("change", function() {
-    // console.log(document.getElementById("size").value);
     color = document.getElementById("color").value; 
+    console.log(color);
     rgb_array = hexToRgb(color);
-    var red = rgb_array[0];
-    var green = rgb_array[1];
-    var blue = rgb_array[2];
-    v_color = vec4(red, green, blue, 1.0 );
-    draw(v_color);
+    draw(rgb_array);
   });
 }
 
-function draw(v_color){
+function draw(rgb_array){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
@@ -124,12 +120,17 @@ function draw(v_color){
   // Compile the vertex shader
   gl.compileShader(vertShader);
 
+  var red = rgb_array.r / 256;
+  var green = rgb_array.g / 256;
+  var blue = rgb_array.b / 256;
   // Fragment shader source code
   var fragCode =
     'void main(void) {' +
-        ' gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);' +
+        'fragColor = vec3(' + red + "," + green + "," + blue + ");"
+        'gl_FragColor = vec4(v_color, 0.1);' +
     '}';
 
+  console.log("vec3(' "+ red + "," + green + "," + blue + ");");
   // Create fragment shader object 
   var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
@@ -155,14 +156,6 @@ function draw(v_color){
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
 
-  attributeColor = gl.getAttribLocation(shader_program, "a_color");
-  bufferColor = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, bufferColor);
-  gl.bufferData(gl.ARRAY_BUFFER, v_color, gl.STREAM_DRAW);
-  gl.vertexAttribPointer(attributeColor, 3, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(attributeColor); 
-    
-
   /* ======= Associating shaders to buffer objects =======*/
 
   // Bind vertex buffer object
@@ -184,7 +177,7 @@ function draw(v_color){
   gl.enableVertexAttribArray(coord);
 
   // Draw the triangle
-  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT,0);
+  gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
 
 }
 
