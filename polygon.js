@@ -23,23 +23,39 @@ var fragmentShaderText = [
   "}",
 ].join("\n");
 
-var length = 1;
 var canvas_width = 0;
 var canvas_height = 0;
-var vertex_buffer;
 var shaderProgram;
+var Index_Buffer;
+var v_color;
+var attributeColor;   // Location of the attribute named "color".
+var bufferColor;      // A vertex buffer object to hold the values for color.
 
+
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
 
 window.onload = function init() {
   draw(1);
-  document.getElementById("length").addEventListener("change", function() {
-    console.log(document.getElementById("length").value);
-    length = document.getElementById("length").value;
-    draw(length);
+  document.getElementById("color").addEventListener("change", function() {
+    // console.log(document.getElementById("size").value);
+    color = document.getElementById("color").value; 
+    rgb_array = hexToRgb(color);
+    var red = rgb_array[0];
+    var green = rgb_array[1];
+    var blue = rgb_array[2];
+    v_color = vec4(red, green, blue, 1.0 );
+    draw(v_color);
   });
 }
 
-function draw(length){
+function draw(v_color){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
@@ -58,14 +74,13 @@ function draw(length){
 
   /*========== Defining and storing the geometry =========*/
 
-  var add = length * 0.1;
-  var minus = -0.1 - add;
-  var plus = 0.1 + add;
+  var vertices =  [
+    0, 3, 0.0,
+    -3, 0, 0.0,
+    3, 0,0.0
+  ];
 
-  var vertices = [
-    minus,minus,0,
-    plus,plus,0
- ]
+  indices = [3,2,1];
 
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
@@ -78,6 +93,18 @@ function draw(length){
 
   // Unbind the buffer
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+  // Create an empty buffer object to store Index buffer
+  Index_Buffer = gl.createBuffer();
+
+  // Bind appropriate array buffer to it
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+
+  // Pass the vertex data to the buffer
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+  // Unbind the buffer
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   /*====================== Shaders =======================*/
 
@@ -128,6 +155,14 @@ function draw(length){
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
 
+  attributeColor = gl.getAttribLocation(shader_program, "a_color");
+  bufferColor = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, bufferColor);
+  gl.bufferData(gl.ARRAY_BUFFER, v_color, gl.STREAM_DRAW);
+  gl.vertexAttribPointer(attributeColor, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(attributeColor); 
+    
+
   /* ======= Associating shaders to buffer objects =======*/
 
   // Bind vertex buffer object
@@ -148,20 +183,9 @@ function draw(length){
   // Enable the attribute
   gl.enableVertexAttribArray(coord);
 
-  // Clear the canvas
-  gl.clearColor(0.5, 0.5, 0.5, 0.9);
-
-  // Enable the depth test
-  gl.enable(gl.DEPTH_TEST);
-
-  // Clear the color and depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Set the view port
-  gl.viewport(0,0,canvas.width,canvas.height);
-
   // Draw the triangle
-  gl.drawArrays(gl.LINES, 0, 2);
+  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT,0);
+
 }
 
 
