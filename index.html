@@ -11,7 +11,7 @@
     <button id="line" onclick="showLine();initLine();">Line</button>
     <button id="square" onclick="showSquare();initSquare();">Square</button>
     <button id="polygon" onclick="showPolygon();initPolygon();">Polygon</button>
-    <!-- <button id="freedraw" onclick="showFreedraw();freedrawmain();">Freedraw</button> -->
+    <button id="freedraw" onclick="showFreedraw();freedrawmain();">Freedraw</button>
     <br>
     <canvas id="surface" style="display:none;" height="512px" width="512px">
 
@@ -35,6 +35,7 @@
             <input type="range" min="1" max="7" step="0.1" value="1" id="length"></input>
         7
         <br>
+        <p>Change the position</p>
         X: 
         -1
             <input type="range" min="-1" max="1" step="0.1" value="0" id="tx-line">
@@ -46,7 +47,8 @@
         1
         <br> <br>
         <button id="help_line" onclick="show_helpLine()">Help</button>
-        <p id="display_helpLine" style="display:none;">Drag the blue node below and see how the line inside our canvas changes length!</p>
+        <p id="display_helpLine" style="display:none;">Drag the blue node below and see how the line inside our canvas changes length!<br>
+            If you want to draw your own square, please import a txt containing 4 vertices with each row representing a vertice with notation "x, y, 0" and using comma in each row unless the last row</p>
     </div>
 
     <!-- SQUARE -->
@@ -58,6 +60,7 @@
             <input type="range" min="1" max="8" step="0.1" value="1" id="size"></input>
         8
         <br>
+        <p>Change the position</p>
         X: 
         -1
             <input type="range" min="-1" max="1" step="0.1" value="0" id="tx-square"></input>
@@ -69,7 +72,8 @@
         1
         <br><br>
         <button id="help_square" onclick="show_helpSquare()">Help</button>
-        <p id="display_helpSquare" style="display:none;">Drag the blue node below and see how the square inside our canvas changes size!</p>
+        <p id="display_helpSquare" style="display:none;">Drag the blue node below and see how the square inside our canvas changes size!<br>
+            If you want to draw your own square, please import a txt containing 4 vertices with each row representing a vertice with notation "x, y, 0" and using comma in each row unless the last row</p></p>
     </div>
 
     <!-- POLYGON -->
@@ -78,11 +82,12 @@
         <p>Change color of this polygon:</p>
         <input type="color" id="color"></input>
         <button id="help_polygon" onclick="show_helpPolygon()">Help</button>
-        <p id="display_helpPolygon" style="display:none;">Click the widget besides the help button, choose the color you desire, click anywhere else on page, and see how the hexagon inside our canvas changes color!</p>
+        <p id="display_helpPolygon" style="display:none;">Click the widget besides the help button, choose the color you desire, click anywhere else on page, and see how the polygon inside our canvas changes color!<br>
+        If you want to draw your own polygon, please import a txt containing more than 3 vertices with each row representing a vertice with notation "x, y, 0" and using comma in each row unless the last row</p>
     </div>
     
     <script src="app.js"></script>
     <script src="all_combined.js"></script>
-    <!-- <script src="freedraw.js"></script> -->
+    <script src="freedraw.js"></script>
 </body>
 </html>
