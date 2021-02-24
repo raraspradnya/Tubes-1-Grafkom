@@ -22,8 +22,71 @@ var fragmentShaderText = [
   "}",
 ].join("\n");
 
+document.getElementById('inputfile_line') .addEventListener('change', function() { 
+  var file = this.files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(progressEvent){
+
+    // By lines
+    arrLines = this.result.split('\n');
+    for(var line = 0; line < 2; line++){
+      var j = 0;
+      var teks = '';
+      while(j < arrLines[line].length){
+        var char = arrLines[line][j];
+        if (char !='\,'){
+          teks += arrLines[line][j];
+        }else{
+          line_vertices.push(parseFloat(teks));
+          teks = '';
+        }
+      }
+    }
+    line_vertices.push(0);
+    console.log(line_vertices);
+    vertices = line_vertices;
+    draw_line(1, line_vertices, 0, 0);
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('inputfile_square') .addEventListener('change', function() { 
+  var file = this.files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(progressEvent){
+    // Entire file
+    // console.log(this.result);
+
+    // By lines
+    lines_square = this.result.split('\n');
+    for(var line = 0; line < 4; line++){
+      // console.log(lines_square[line]);
+      var j = 0;
+      var teks = '';
+      while(j < lines_square[line].length){
+        var char = lines_square[line][j];
+        if (char !='\,'){
+          teks += lines_square[line][j];
+        }else{
+          square_vertices.push(parseFloat(teks));
+          teks = '';
+        }
+      }
+    }
+    square_vertices.push(0);
+    console.log(square_vertices);
+    vertices = square_vertices;
+    draw_square(1, square_vertices, 0,0);
+  };
+  reader.readAsText(file);
+});
+
 var square_vertices = [];
+var line_vertices = [];
 var lines_square;
+var arrLines;
 var length = 1;
 var size = 1;
 var canvas_width = 0;
@@ -41,17 +104,17 @@ window.onload = function init() {
   document.getElementById("length").addEventListener("change", function () {
     console.log(document.getElementById("length").value);
     length = document.getElementById("length").value;
-    draw_line(length, tx, ty);
+    draw_line(length, vertices, tx, ty);
   });
 
   document.getElementById("tx-line").addEventListener("change", function () {
     tx = document.getElementById("tx-line").value;
-    draw_line(length, tx, ty);
+    draw_line(length, vertices, tx, ty);
   });
 
   document.getElementById("ty-line").addEventListener("change", function () {
     ty = document.getElementById("ty-line").value;
-    draw_line(length, tx, ty);
+    draw_line(length, vertices, tx, ty);
   });
 
   document.getElementById("size").addEventListener("change", function () {
@@ -76,42 +139,15 @@ window.onload = function init() {
     rgb_array = hexToRgbA(color);
     draw_polygon(rgb_array);
   });
-
-  document.getElementById('inputfile_square') .addEventListener('change', function() { 
-    var file = this.files[0];
-  
-    var reader = new FileReader();
-    reader.onload = function(progressEvent){
-      // Entire file
-      // console.log(this.result);
-  
-      // By lines
-      lines_square = this.result.split('\n');
-      for(var line = 0; line < 4; line++){
-        // console.log(lines_square[line]);
-        var j = 0;
-        var teks = '';
-        while(j < lines_square[line].length){
-          var char = lines_square[line][j];
-          if (char !='\,'){
-            teks += lines_square[line][j];
-          }else{
-            square_vertices.push(parseFloat(teks));
-            teks = '';
-          }
-        }
-      }
-      square_vertices.push(0);
-      console.log(square_vertices);
-      vertices = square_vertices;
-      draw_square(1, square_vertices);
-    };
-    reader.readAsText(file);
-  });
 };
 
 function initLine() {
-  draw_line(1, 0, 0);
+  var add = length * 0.1;
+  var minus = -0.1 - add;
+  var plus = 0.1 + add;
+
+  vertices = [minus, minus, 0, plus, plus, 0];
+  draw_line(1, vertices, 0, 0);
 }
 
 function initSquare(){
@@ -124,7 +160,7 @@ function initSquare(){
     plus, minus,0.0,
     plus, plus, 0.0 
   ];
-  draw_square(1, vertices);
+  draw_square(1, vertices, 0,0);
 };
 
 function hexToRgbA(hex) {
@@ -148,10 +184,41 @@ function hexToRgbA(hex) {
 
 function initPolygon() {
   rgb_array = hexToRgbA("#000000");
-  draw_polygon(rgb_array);
+  var x = 0; //x coordinate for the center of the hexagon
+  var y = 0; //y coordinate for the center of the hexagon
+  var r = 0.5; //radius of the circle upon which the vertices of the hexagon lie.
+  var q = Math.sqrt(Math.pow(r, 2) - Math.pow(r / 2, 2)); //y coordinate of the points that are above and below center point
+  var xCoord = new Array(8);
+  var yCoord = new Array(8);
+  xCoord[0] = x;
+  yCoord[0] = y;
+  xCoord[1] = x + r;
+  yCoord[1] = y;
+  xCoord[2] = x + r / 2;
+  yCoord[2] = y + q;
+  xCoord[3] = x - r / 2;
+  yCoord[3] = y + q;
+  xCoord[4] = x - r;
+  yCoord[4] = y;
+  xCoord[5] = x - r / 2;
+  yCoord[5] = y - q;
+  xCoord[6] = x + r / 2;
+  yCoord[6] = y - q;
+  xCoord[7] = x + r;
+  yCoord[7] = y;
+
+  var polygon = []; // Initialize Array
+
+  for (var i = 0; i < xCoord.length; ++i) {
+    polygon.push(xCoord[i]);
+    polygon.push(yCoord[i]);
+    polygon.push(0);
+  }
+  draw_polygon(rgb_array,polygon);
 }
 
-function draw_line(length, tx, ty) {
+
+function draw_line(size, v, tx, ty) {
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById("surface");
   canvas_height = canvas.height;
@@ -170,11 +237,7 @@ function draw_line(length, tx, ty) {
 
   /*========== Defining and storing the geometry =========*/
 
-  var add = length * 0.1;
-  var minus = -0.1 - add;
-  var plus = 0.1 + add;
-
-  var vertices = [minus, minus, 0, plus, plus, 0];
+  vertices = v;
 
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
@@ -424,7 +487,7 @@ function draw_square(size, v, tx, ty) {
   gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 }
 
-function draw_polygon(rgb_array) {
+function draw_polygon(rgb_array, v) {
   console.log(rgb_array);
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById("surface");
@@ -444,39 +507,7 @@ function draw_polygon(rgb_array) {
 
   /*========== Defining and storing the geometry =========*/
 
-  var x = 0; //x coordinate for the center of the hexagon
-  var y = 0; //y coordinate for the center of the hexagon
-  var r = 0.5; //radius of the circle upon which the vertices of the hexagon lie.
-  var q = Math.sqrt(Math.pow(r, 2) - Math.pow(r / 2, 2)); //y coordinate of the points that are above and below center point
-  var xCoord = new Array(8);
-  var yCoord = new Array(8);
-  xCoord[0] = x;
-  yCoord[0] = y;
-  xCoord[1] = x + r;
-  yCoord[1] = y;
-  xCoord[2] = x + r / 2;
-  yCoord[2] = y + q;
-  xCoord[3] = x - r / 2;
-  yCoord[3] = y + q;
-  xCoord[4] = x - r;
-  yCoord[4] = y;
-  xCoord[5] = x - r / 2;
-  yCoord[5] = y - q;
-  xCoord[6] = x + r / 2;
-  yCoord[6] = y - q;
-  xCoord[7] = x + r;
-  yCoord[7] = y;
-
-  vertices = []; // Initialize Array
-
-  for (var i = 0; i < xCoord.length; ++i) {
-    vertices.push(xCoord[i]);
-    vertices.push(yCoord[i]);
-    vertices.push(0);
-  }
-
-  console.log(vertices);
-  // indices = [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7];
+  vertices = v;
 
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
