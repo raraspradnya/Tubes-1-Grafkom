@@ -30,9 +30,21 @@
     <div id="displayLine" style="display:none;">
         <input type="file" id="inputfile_line"></input> 
         <p>Change the length of line</p>
+        len: 
         1
             <input type="range" min="1" max="7" step="0.1" value="1" id="length"></input>
         7
+        <br>
+        X: 
+        -1
+            <input type="range" min="-1" max="1" step="0.1" value="0" id="tx-line">
+        1
+        <br>
+        Y:
+        -1
+            <input type="range" min="-1" max="1" step="0.1" value="0" id="ty-line"> 
+        1
+        <br> <br>
         <button id="help_line" onclick="show_helpLine()">Help</button>
         <p id="display_helpLine" style="display:none;">Drag the blue node below and see how the line inside our canvas changes length!</p>
     </div>
@@ -41,9 +53,21 @@
     <div id="displaySquare" style="display:none;">
         <input type="file" id="inputfile_square"></input> 
         <p>Change size of the square:</p>
+        size: 
         1
             <input type="range" min="1" max="8" step="0.1" value="1" id="size"></input>
         8
+        <br>
+        X: 
+        -1
+            <input type="range" min="-1" max="1" step="0.1" value="0" id="tx-square"></input>
+        1
+        <br>
+        Y:
+        -1
+            <input type="range" min="-1" max="1" step="0.1" value="0" id="ty-square"></input>
+        1
+        <br><br>
         <button id="help_square" onclick="show_helpSquare()">Help</button>
         <p id="display_helpSquare" style="display:none;">Drag the blue node below and see how the square inside our canvas changes size!</p>
     </div>
