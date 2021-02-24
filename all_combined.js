@@ -25,6 +25,16 @@ var fragmentShaderText = [
 
 var square_vertices = [];
 var lines_square;
+var length = 1;
+var size = 1;
+var canvas_width = 0;
+var canvas_height = 0;
+var vertices;
+
+var vertex_buffer;
+var shaderProgram;
+var Index_Buffer;
+
 document.getElementById('inputfile_square') .addEventListener('change', function() { 
   var file = this.files[0];
 
@@ -44,7 +54,7 @@ document.getElementById('inputfile_square') .addEventListener('change', function
         if (char !='\,'){
           teks += lines_square[line][j];
         }else{
-          square_vertices.push(parseInt(teks));
+          square_vertices.push(parseFloat(teks));
           teks = '';
         }
         j+=1;
@@ -52,21 +62,11 @@ document.getElementById('inputfile_square') .addEventListener('change', function
     }
     square_vertices.push(0);
     console.log(square_vertices);
+    vertices = square_vertices;
+    draw_square(1, square_vertices);
   };
   reader.readAsText(file);
 });
-
-
-
-
-var length = 1;
-var size = 1;
-var canvas_width = 0;
-var canvas_height = 0;
-
-var vertex_buffer;
-var shaderProgram;
-var Index_Buffer;
 
 window.onload = function init() {
   document.getElementById("length").addEventListener("change", function() {
@@ -78,7 +78,7 @@ window.onload = function init() {
   document.getElementById("size").addEventListener("change", function() {
     console.log(document.getElementById("size").value);
     size = document.getElementById("size").value;
-    draw_square(size);
+    draw_square(size, vertices);
   });
 
   document.getElementById("color").addEventListener("change", function() {
@@ -94,7 +94,16 @@ function initLine(){
 };
 
 function initSquare(){
-  draw_square(1);
+  var minus = -0.1;
+  var plus = 0.1;
+
+  vertices =  [
+    minus, plus, 0.0,
+    minus, minus, 0.0,
+    plus, minus,0.0,
+    plus, plus, 0.0 
+  ];
+  draw_square(1, vertices);
 };
 
 function hexToRgbA(hex){
@@ -246,7 +255,7 @@ function draw_line(length){
   gl.drawArrays(gl.LINES, 0, 2);
 }
 
-function draw_square(data){
+function draw_square(size, v){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
@@ -265,17 +274,7 @@ function draw_square(data){
 
   /*========== Defining and storing the geometry =========*/
 
-  var add = size * 0.1;
-  var minus = -0.1 - add;
-  var plus = 0.1 + add;
-
-  var vertices =  [
-    minus, plus, 0.0,
-    minus, minus, 0.0,
-    plus, minus,0.0,
-    plus, plus, 0.0 
-  ];
-
+  vertices = v;
   indices = [3,2,1,3,1,0];
 
   // Create an empty buffer object to store vertex buffer
@@ -307,8 +306,9 @@ function draw_square(data){
   // Vertex shader source code
   var vertCode =
     'attribute vec3 coordinates;' +
+    'uniform mat4 u_xformMatrix;' +
     'void main(void) {' +
-        ' gl_Position = vec4(coordinates, 1.0);' +
+        ' gl_Position = vec4(coordinates, 1.0) * u_xformMatrix;' +
     '}';
 
   // Create a vertex shader object
@@ -350,6 +350,17 @@ function draw_square(data){
 
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
+
+  var Sx = size, Sy = size, Sz = size;
+  var xformMatrix = new Float32Array([
+    Sx,   0.0,  0.0,  0.0,
+    0.0,  Sy,   0.0,  0.0,
+    0.0,  0.0,  Sz,   0.0,
+    0.0,  0.0,  0.0,  1.0  
+  ]);
+
+  var u_xformMatrix = gl.getUniformLocation(shaderProgram, 'u_xformMatrix');
+  gl.uniformMatrix4fv(u_xformMatrix, false, xformMatrix);
 
   /* ======= Associating shaders to buffer objects =======*/
 
