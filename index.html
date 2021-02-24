@@ -11,13 +11,17 @@
     <button id="line" onclick="showLine();initLine();">Line</button>
     <button id="square" onclick="showSquare();initSquare();">Square</button>
     <button id="polygon" onclick="showPolygon();initPolygon();">Polygon</button>
+    <button id="freedraw" onclick="showFreedraw();freedrawmain();">Freedraw</button>
     <br>
     <canvas id="surface" style="display:none;" height="512px" width="512px">
+
         <!-- If this text is rendered, it means the canvas
         failed to load -->
         Your browser is not support HTML5 for canvas <br>
         please find another browser
     </canvas>
+    <canvas id="freedraw_surface" style="display:none;" height="512px" width="512px"></canvas>
+
     <br>
 
 
@@ -55,7 +59,6 @@
     
     <script src="app.js"></script>
     <script src="all_combined.js"></script>
-
-
+    <script src="freedraw.js"></script>
 </body>
 </html>
