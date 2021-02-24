@@ -335,8 +335,6 @@ function draw_line(size, v, tx, ty) {
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
 
-  console.log(vertices)
-
   var Xp = (vertices[0] + vertices[3])/2, Yp = (vertices[1] + vertices[4])/2
 
   var Sx = size, Sy = size, Sz = size;
@@ -488,10 +486,14 @@ function draw_square(size, v, tx, ty) {
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
 
+  console.log(vertices)
+
+  var Xp = (vertices[0] + vertices[3] + vertices[6] + vertices[9])/4, Yp = (vertices[1] + vertices[4] + vertices[7] + vertices[10])/10
+
   var Sx = size, Sy = size, Sz = size;
   var xformMatrix = new Float32Array([
-    Sx,   0.0,  0.0,  0.0,
-    0.0,  Sy,   0.0,  0.0,
+    Sx,   0.0,  0.0,  Xp - Sx*Xp,
+    0.0,  Sy,   0.0,  Yp - Sy*Yp,
     0.0,  0.0,  Sz,   0.0,
     0.0,  0.0,  0.0,  1.0  
   ]);
