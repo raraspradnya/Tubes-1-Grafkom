@@ -28,7 +28,7 @@ var canvas_width = 0;
 var canvas_height = 0;
 var vertex_buffer;
 var shaderProgram;
-
+var Index_Buffer;
 
 window.onload = function init() {
   draw(1);

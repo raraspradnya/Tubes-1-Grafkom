@@ -36,9 +36,8 @@ var Index_Buffer;
 window.onload = function init() {
   draw(1);
   document.getElementById("size").addEventListener("change", function() {
-    // console.log(document.getElementById("size").value);
+    console.log(document.getElementById("size").value);
     size = document.getElementById("size").value;
-    document.getElementById("sizedisplay").innerHTML = size;
     draw(size);
   });
 }
