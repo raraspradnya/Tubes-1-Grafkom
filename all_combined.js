@@ -22,66 +22,6 @@ var fragmentShaderText = [
   "}",
 ].join("\n");
 
-document.getElementById('inputfile_line') .addEventListener('change', function() { 
-  var file = this.files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(progressEvent){
-
-    // By lines
-    arrLines = this.result.split('\n');
-    for(var line = 0; line < 2; line++){
-      var j = 0;
-      var teks = '';
-      while(j < arrLines[line].length){
-        var char = arrLines[line][j];
-        if (char !='\,'){
-          teks += arrLines[line][j];
-        }else{
-          line_vertices.push(parseFloat(teks));
-          teks = '';
-        }
-      }
-    }
-    line_vertices.push(0);
-    console.log(line_vertices);
-    vertices = line_vertices;
-    draw_line(1, line_vertices, 0, 0);
-  };
-  reader.readAsText(file);
-});
-
-document.getElementById('inputfile_square') .addEventListener('change', function() { 
-  var file = this.files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(progressEvent){
-    // Entire file
-    // console.log(this.result);
-
-    // By lines
-    lines_square = this.result.split('\n');
-    for(var line = 0; line < 4; line++){
-      // console.log(lines_square[line]);
-      var j = 0;
-      var teks = '';
-      while(j < lines_square[line].length){
-        var char = lines_square[line][j];
-        if (char !='\,'){
-          teks += lines_square[line][j];
-        }else{
-          square_vertices.push(parseFloat(teks));
-          teks = '';
-        }
-      }
-    }
-    square_vertices.push(0);
-    console.log(square_vertices);
-    vertices = square_vertices;
-    draw_square(1, square_vertices, 0,0);
-  };
-  reader.readAsText(file);
-});
 
 var square_vertices = [];
 var line_vertices = [];
@@ -138,6 +78,69 @@ window.onload = function init() {
     console.log(color);
     rgb_array = hexToRgbA(color);
     draw_polygon(rgb_array);
+  });
+
+  document.getElementById('inputfile_line').addEventListener('change', function() { 
+    var file = this.files[0];
+  
+    var reader = new FileReader();
+    reader.onload = function(progressEvent){
+  
+      // By lines
+      arrLines = this.result.split('\n');
+      for(var line = 0; line < 2; line++){
+        var j = 0;
+        var teks = '';
+        while(j < arrLines[line].length){
+          var char = arrLines[line][j];
+          if (char !='\,'){
+            teks += arrLines[line][j];
+          }else{
+            line_vertices.push(parseFloat(teks));
+            teks = '';
+          }
+          j++;
+        }
+      }
+      line_vertices.push(0);
+      console.log(line_vertices);
+      vertices = line_vertices;
+      draw_line(1, line_vertices, 0, 0);
+    };
+    reader.readAsText(file);
+  });
+  
+  document.getElementById('inputfile_square').addEventListener('change', function() { 
+    var file = this.files[0];
+  
+    var reader = new FileReader();
+    reader.onload = function(progressEvent){
+      // Entire file
+      // console.log(this.result);
+  
+      // By lines
+      lines_square = this.result.split('\n');
+      for(var line = 0; line < 4; line++){
+        // console.log(lines_square[line]);
+        var j = 0;
+        var teks = '';
+        while(j < lines_square[line].length){
+          var char = lines_square[line][j];
+          if (char !='\,'){
+            teks += lines_square[line][j];
+          }else{
+            square_vertices.push(parseFloat(teks));
+            teks = '';
+          }
+          j++;
+        }
+      }
+      square_vertices.push(0);
+      console.log(square_vertices);
+      vertices = square_vertices;
+      draw_square(1, square_vertices, 0,0);
+    };
+    reader.readAsText(file);
   });
 };
 
