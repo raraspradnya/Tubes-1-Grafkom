@@ -34,48 +34,6 @@ var vertex_buffer;
 var shaderProgram;
 var Index_Buffer;
 
-document.getElementById('inputfile_square') .addEventListener('change', function() { 
-  var file = this.files[0];
-
-  var reader = new FileReader();
-  reader.onload = function(progressEvent){
-    // Entire file
-    // console.log(this.result);
-
-    // By lines
-    lines_square = this.result.split('\n');
-    for(var line = 0; line < 4; line++){
-      // console.log(lines_square[line]);
-      var j = 0;
-      var teks = '';
-      while(j < lines_square[line].length){
-        var char = lines_square[line][j];
-        if (char !='\,'){
-          teks += lines_square[line][j];
-        }else{
-          square_vertices.push(parseFloat(teks));
-          teks = '';
-        }
-      }
-    }
-    square_vertices.push(0);
-    console.log(square_vertices);
-    vertices = square_vertices;
-    draw_square(1, square_vertices);
-  };
-  reader.readAsText(file);
-});
-
-
-var length = 1;
-var size = 1;
-var canvas_width = 0;
-var canvas_height = 0;
-
-var vertex_buffer;
-var shaderProgram;
-var Index_Buffer;
-
 var tx = 0;
 var ty = 0;
 
@@ -117,6 +75,38 @@ window.onload = function init() {
     console.log(color);
     rgb_array = hexToRgbA(color);
     draw_polygon(rgb_array);
+  });
+
+  document.getElementById('inputfile_square') .addEventListener('change', function() { 
+    var file = this.files[0];
+  
+    var reader = new FileReader();
+    reader.onload = function(progressEvent){
+      // Entire file
+      // console.log(this.result);
+  
+      // By lines
+      lines_square = this.result.split('\n');
+      for(var line = 0; line < 4; line++){
+        // console.log(lines_square[line]);
+        var j = 0;
+        var teks = '';
+        while(j < lines_square[line].length){
+          var char = lines_square[line][j];
+          if (char !='\,'){
+            teks += lines_square[line][j];
+          }else{
+            square_vertices.push(parseFloat(teks));
+            teks = '';
+          }
+        }
+      }
+      square_vertices.push(0);
+      console.log(square_vertices);
+      vertices = square_vertices;
+      draw_square(1, square_vertices);
+    };
+    reader.readAsText(file);
   });
 };
 
@@ -204,8 +194,9 @@ function draw_line(length, tx, ty) {
   var vertCode =
     "attribute vec3 coordinates;" +
     "uniform vec4 translation;" +
+    'uniform mat4 u_xformMatrix;' +
     "void main(void) {" +
-    " gl_Position = vec4(coordinates, 1.0) + translation;" +
+    " gl_Position = vec4(coordinates, 1.0) * u_xformMatrix + translation;" +
     "}";
 
   // Create a vertex shader object
@@ -245,6 +236,17 @@ function draw_line(length, tx, ty) {
 
   // Use the combined shader program object
   gl.useProgram(shaderProgram);
+
+  var Sx = size, Sy = size, Sz = size;
+  var xformMatrix = new Float32Array([
+    Sx,   0.0,  0.0,  0.0,
+    0.0,  Sy,   0.0,  0.0,
+    0.0,  0.0,  Sz,   0.0,
+    0.0,  0.0,  0.0,  1.0  
+  ]);
+
+  var u_xformMatrix = gl.getUniformLocation(shaderProgram, 'u_xformMatrix');
+  gl.uniformMatrix4fv(u_xformMatrix, false, xformMatrix);
 
   /* ======= Associating shaders to buffer objects =======*/
 
@@ -339,11 +341,12 @@ function draw_square(size, v, tx, ty) {
 
   // Vertex shader source code
   var vertCode =
-    'attribute vec3 coordinates;' +
+    "attribute vec3 coordinates;" +
+    "uniform vec4 translation;" +
     'uniform mat4 u_xformMatrix;' +
-    'void main(void) {' +
-        ' gl_Position = vec4(coordinates, 1.0) * u_xformMatrix;' +
-    '}';
+    "void main(void) {" +
+    " gl_Position = vec4(coordinates, 1.0) * u_xformMatrix + translation;" +
+    "}";
 
   // Create a vertex shader object
   var vertShader = gl.createShader(gl.VERTEX_SHADER);
@@ -464,7 +467,7 @@ function draw_polygon(rgb_array) {
   xCoord[7] = x + r;
   yCoord[7] = y;
 
-  var vertices = []; // Initialize Array
+  vertices = []; // Initialize Array
 
   for (var i = 0; i < xCoord.length; ++i) {
     vertices.push(xCoord[i]);
@@ -473,7 +476,7 @@ function draw_polygon(rgb_array) {
   }
 
   console.log(vertices);
-  indices = [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7];
+  // indices = [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 7];
 
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
@@ -487,21 +490,21 @@ function draw_polygon(rgb_array) {
   // Unbind the buffer
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-  // Create an empty buffer object to store Index buffer
-  Index_Buffer = gl.createBuffer();
+  // // Create an empty buffer object to store Index buffer
+  // Index_Buffer = gl.createBuffer();
 
-  // Bind appropriate array buffer to it
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  // // Bind appropriate array buffer to it
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
 
-  // Pass the vertex data to the buffer
-  gl.bufferData(
-    gl.ELEMENT_ARRAY_BUFFER,
-    new Uint16Array(indices),
-    gl.STATIC_DRAW
-  );
+  // // Pass the vertex data to the buffer
+  // gl.bufferData(
+  //   gl.ELEMENT_ARRAY_BUFFER,
+  //   new Uint16Array(indices),
+  //   gl.STATIC_DRAW
+  // );
 
-  // Unbind the buffer
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+  // // Unbind the buffer
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
   /*====================== Shaders =======================*/
 
@@ -535,10 +538,6 @@ function draw_polygon(rgb_array) {
 
   // Fragment shader source code
   var fragCode = "void main(void) {" + "gl_FragColor = " + color + "}";
-
-  console.log(rgb_array.r);
-  console.log(rgb_array.g);
-  console.log(rgb_array.b);
 
   // Create fragment shader object
   var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -574,7 +573,7 @@ function draw_polygon(rgb_array) {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // // Bind index buffer object
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
+  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
 
   // Get the attribute location
   var coord = gl.getAttribLocation(shaderProgram, "coordinates");
@@ -586,5 +585,6 @@ function draw_polygon(rgb_array) {
   gl.enableVertexAttribArray(coord);
 
   // Draw the triangle
-  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+  // gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, vertices.length/3);
 }
