@@ -1,4 +1,3 @@
-
 var vertexShaderText = [
   "precision mediump float;",
   "",
@@ -22,6 +21,43 @@ var fragmentShaderText = [
   "  gl_FragColor = vec4(fragColor, 1.0);",
   "}",
 ].join("\n");
+
+
+var square_vertices = [];
+var lines_square;
+document.getElementById('inputfile_square') .addEventListener('change', function() { 
+  var file = this.files[0];
+
+  var reader = new FileReader();
+  reader.onload = function(progressEvent){
+    // Entire file
+    // console.log(this.result);
+
+    // By lines
+    lines_square = this.result.split('\n');
+    for(var line = 0; line < 4; line++){
+      // console.log(lines_square[line]);
+      var j = 0;
+      var teks = '';
+      while(j < lines_square[line].length){
+        var char = lines_square[line][j];
+        if (char !='\,'){
+          teks += lines_square[line][j];
+        }else{
+          square_vertices.push(parseInt(teks));
+          teks = '';
+        }
+        j+=1;
+      }
+    }
+    square_vertices.push(0);
+    console.log(square_vertices);
+  };
+  reader.readAsText(file);
+});
+
+
+
 
 var length = 1;
 var size = 1;
@@ -51,7 +87,6 @@ window.onload = function init() {
     rgb_array = hexToRgbA(color);
     draw_polygon(rgb_array);
   });
-
 };
 
 function initLine(){
@@ -211,7 +246,7 @@ function draw_line(length){
   gl.drawArrays(gl.LINES, 0, 2);
 }
 
-function draw_square(size){
+function draw_square(data){
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
