@@ -4,6 +4,7 @@ function showLine() {
   document.getElementById('surface').style.display = "block";
   document.getElementById('displaySquare').style.display = "none";
   document.getElementById('displayPolygon').style.display = "none";
+  document.getElementById('freedraw_surface').style.display = "none"  
 }
 
 function showSquare() {
@@ -11,6 +12,7 @@ function showSquare() {
   document.getElementById('displaySquare').style.display = "block";
   document.getElementById('surface').style.display = "block";
   document.getElementById('displayPolygon').style.display = "none";
+  document.getElementById('freedraw_surface').style.display = "none"  
 }
 
 function showPolygon() {
@@ -18,6 +20,15 @@ function showPolygon() {
   document.getElementById('displaySquare').style.display = "none";
   document.getElementById('displayPolygon').style.display = "block";
   document.getElementById('surface').style.display = "block";
+  document.getElementById('freedraw_surface').style.display = "none"  
+}
+
+function showFreedraw() {
+  document.getElementById('displayLine').style.display = "none";
+  document.getElementById('displaySquare').style.display = "none";
+  document.getElementById('displayPolygon').style.display = "none";
+  document.getElementById('surface').style.display = "none";
+  document.getElementById('freedraw_surface').style.display = "block"  
 }
 
 function show_helpLine(){

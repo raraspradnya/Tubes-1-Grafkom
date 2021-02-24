@@ -11,18 +11,22 @@
     <button id="line" onclick="showLine();initLine();">Line</button>
     <button id="square" onclick="showSquare();initSquare();">Square</button>
     <button id="polygon" onclick="showPolygon();initPolygon();">Polygon</button>
+    <button id="freedraw" onclick="showFreedraw();freedrawmain();">Freedraw</button>
     <canvas id="surface" style="display:none;" height="512px" width="512px">
+
         <!-- If this text is rendered, it means the canvas
         failed to load -->
         Your browser is not support HTML5 for canvas <br>
         please find another browser
     </canvas>
+    <canvas id="freedraw_surface" style="display:none;" height="512px" width="512px"></canvas>
+
     <br>
 
 
     <!-- LINE -->
     <div id="displayLine" style="display:none;">
-        <script src="line.js"></script>
+        <!-- <script src="line.js"></script> -->
         <p>Change the length of line</p>
         1
             <input type="range" min="1" max="7" step="0.1" value="1" id="length"></input>
@@ -53,7 +57,6 @@
     
     <script src="app.js"></script>
     <script src="all_combined.js"></script>
-
-
+    <script src="freedraw.js"></script>
 </body>
 </html>
