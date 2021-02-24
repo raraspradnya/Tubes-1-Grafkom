@@ -25,7 +25,9 @@ var fragmentShaderText = [
 
 var square_vertices = [];
 var line_vertices = [];
+var polygon_vertices = [];
 var lines_square;
+var arrPoly;
 var arrLines;
 var length = 1;
 var size = 1;
@@ -77,7 +79,7 @@ window.onload = function init() {
     color = document.getElementById("color").value;
     console.log(color);
     rgb_array = hexToRgbA(color);
-    draw_polygon(rgb_array);
+    draw_polygon(rgb_array, vertices);
   });
 
   document.getElementById('inputfile_line').addEventListener('change', function() { 
@@ -106,6 +108,36 @@ window.onload = function init() {
       console.log(line_vertices);
       vertices = line_vertices;
       draw_line(1, line_vertices, 0, 0);
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('inputfile_polygon').addEventListener('change', function() { 
+    var file = this.files[0];
+  
+    var reader = new FileReader();
+    reader.onload = function(progressEvent){
+  
+      // By lines
+      arrPoly = this.result.split('\n');
+      for(var line = 0; line < arrPoly.length; line++){
+        var j = 0;
+        var teks = '';
+        while(j < arrPoly[line].length){
+          var char = arrPoly[line][j];
+          if (char !='\,'){
+            teks += arrPoly[line][j];
+          }else{
+            polygon_vertices.push(parseFloat(teks));
+            teks = '';
+          }
+          j++;
+        }
+      }
+      polygon_vertices.push(0);
+      console.log(polygon_vertices);
+      vertices = polygon_vertices;
+      draw_polygon(1, polygon_vertices);
     };
     reader.readAsText(file);
   });
@@ -307,7 +339,7 @@ function draw_line(size, v, tx, ty) {
   var xformMatrix = new Float32Array([
     Sx,   0.0,  0.0,  0.0,
     0.0,  Sy,   0.0,  0.0,
-    0.0,  0.0,  Sz,   0.0,
+    0.0,  0.0,  1,   0.0,
     0.0,  0.0,  0.0,  1.0  
   ]);
 
