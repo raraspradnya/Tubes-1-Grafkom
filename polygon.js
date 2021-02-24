@@ -26,7 +26,7 @@ var fragmentShaderText = [
 var canvas_width = 0;
 var canvas_height = 0;
 var shaderProgram;
-var Index_Buffer;
+// var Index_Buffer;
 var v_color;
 var attributeColor;   // Location of the attribute named "color".
 var bufferColor;      // A vertex buffer object to hold the values for color.
@@ -41,17 +41,39 @@ function hexToRgb(hex) {
   } : null;
 }
 
+function hexToRgbA(hex){
+  var c;
+  var result;
+  if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+      c= hex.substring(1).split('');
+      if(c.length== 3){
+          c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+      }
+      c= '0x'+c.join('');
+      // return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',1)';
+      return result = {
+        r: ((c>>16)&255)/256,
+        g: ((c>>8)&255)/256,
+        b: (c&255)/256,
+        a: 1
+      };
+  }
+  throw new Error('Bad Hex');
+}
+
 window.onload = function init() {
-  draw(1);
+  rgb_array = hexToRgbA("#112233");
+  draw(rgb_array);
   document.getElementById("color").addEventListener("change", function() {
     color = document.getElementById("color").value; 
     console.log(color);
-    rgb_array = hexToRgb(color);
+    rgb_array = hexToRgbA(color);
     draw(rgb_array);
   });
 }
 
 function draw(rgb_array){
+  console.log(rgb_array);
   /*============ Creating a canvas =================*/
   var canvas = document.getElementById('surface');
   canvas_height = canvas.height;
@@ -70,14 +92,40 @@ function draw(rgb_array){
 
   /*========== Defining and storing the geometry =========*/
 
-  var vertices =  [
-    0, 3, 0.0,
-    -3, 0, 0.0,
-    3, 0,0.0
-  ];
+  var x = 0; //x coordinate for the center of the hexagon
+	var y = 0; //y coordinate for the center of the hexagon
+	var r = .5; //radius of the circle upon which the vertices of the hexagon lie.
+	var q = Math.sqrt(Math.pow(r,2) - Math.pow((r/2),2)); //y coordinate of the points that are above and below center point
+	var xCoord = new Array(8);
+	var yCoord = new Array(8);
+	xCoord[0] = x;
+	yCoord[0] = y;
+	xCoord[1] = x + r;
+	yCoord[1] = y;
+	xCoord[2] = x + (r/2);
+	yCoord[2] = y+q;
+	xCoord[3] = x-(r/2);
+	yCoord[3] = y+q;
+	xCoord[4] = x - r;
+	yCoord[4] = y;
+	xCoord[5] = x-(r/2);
+	yCoord[5] = y-q;
+	xCoord[6] = x + (r/2);
+	yCoord[6] = y-q;
+	xCoord[7] = x + r;
+	yCoord[7] = y;
+	
+	var vertices = [];// Initialize Array
+	
+  for ( var i = 0; i < xCoord.length; ++i ) {
+    vertices.push(xCoord[i]);
+    vertices.push(yCoord[i]);
+    vertices.push(0);
+  }
 
-  indices = [3,2,1];
-
+  console.log(vertices);
+  indices = [0,1,2,0,2,3,0,3,4,0,4,5,0,5,6,0,6,7];
+	
   // Create an empty buffer object to store vertex buffer
   vertex_buffer = gl.createBuffer();
 
@@ -120,17 +168,19 @@ function draw(rgb_array){
   // Compile the vertex shader
   gl.compileShader(vertShader);
 
-  var red = rgb_array.r / 256;
-  var green = rgb_array.g / 256;
-  var blue = rgb_array.b / 256;
+  // Prepare color
+  var color = "vec4(" + rgb_array.r + ',' + rgb_array.g + ',' + rgb_array.b + ',' + rgb_array.a + ');';
+  
   // Fragment shader source code
   var fragCode =
     'void main(void) {' +
-        'fragColor = vec3(' + red + "," + green + "," + blue + ");"
-        'gl_FragColor = vec4(v_color, 0.1);' +
+        'gl_FragColor = '+ color +
     '}';
 
-  console.log("vec3(' "+ red + "," + green + "," + blue + ");");
+  console.log(rgb_array.r);
+  console.log(rgb_array.g);
+  console.log(rgb_array.b);
+
   // Create fragment shader object 
   var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
@@ -164,7 +214,7 @@ function draw(rgb_array){
   // // Clear the color buffer bit
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // Bind index buffer object
+  // // Bind index buffer object
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer); 
 
   // Get the attribute location
@@ -177,8 +227,7 @@ function draw(rgb_array){
   gl.enableVertexAttribArray(coord);
 
   // Draw the triangle
-  gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
-
+  gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT,0);
 }
 
 
