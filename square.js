@@ -26,9 +26,8 @@ var fragmentShaderText = [
 var size = 1;
 var canvas_width = 0;
 var canvas_height = 0;
-var u_xformMatrix;
+
 var vertex_buffer;
-var xformMatrix;
 var shaderProgram;
 var Index_Buffer;
 

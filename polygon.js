@@ -26,10 +26,6 @@ var fragmentShaderText = [
 var canvas_width = 0;
 var canvas_height = 0;
 var shaderProgram;
-// var Index_Buffer;
-var v_color;
-var attributeColor;   // Location of the attribute named "color".
-var bufferColor;      // A vertex buffer object to hold the values for color.
 
 
 function hexToRgb(hex) {
@@ -170,7 +166,7 @@ function draw(rgb_array){
 
   // Prepare color
   var color = "vec4(" + rgb_array.r + ',' + rgb_array.g + ',' + rgb_array.b + ',' + rgb_array.a + ');';
-  
+
   // Fragment shader source code
   var fragCode =
     'void main(void) {' +

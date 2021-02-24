@@ -7,7 +7,10 @@
     <title>WebGL</title>
 </head>
 <body>
-    <canvas id="surface" height="512px" width="512px">
+    <button id="line" onclick="showLine();initLine();">Line</button>
+    <button id="square" onclick="showSquare();initSquare();">Square</button>
+    <button id="polygon" onclick="showPolygon();initPolygon();">Polygon</button>
+    <canvas id="surface" style="display:none;" height="512px" width="512px">
         <!-- If this text is rendered, it means the canvas
         failed to load -->
         Your browser is not support HTML5 for canvas <br>
@@ -15,28 +18,34 @@
     </canvas>
     <br>
 
+
     <!-- LINE -->
-    <!-- <script src="line.js"></script>
-    <p>Change the length of line</p>
-    <div>
+    <div id="displayLine" style="display:none;">
+        <script src="line.js"></script>
+        <p>Change the length of line</p>
         1
-        <input type="range" min="1" max="7" step="0.1" value="1" id="length"></input>
+            <input type="range" min="1" max="7" step="0.1" value="1" id="length"></input>
         7
-    </div> -->
+    </div>
 
     <!-- SQUARE -->
-    <!-- <script src="square.js"></script>
-    <p>Change size of the square:</p>
-    <div>
+    <div id="displaySquare" style="display:none;">
+        <!-- <script src="line.js"></script> -->
+        <p>Change size of the square:</p>
         1
-        <input type="range" min="1" max="8" step="0.1" value="1" id="size"></input>
+            <input type="range" min="1" max="8" step="0.1" value="1" id="size"></input>
         8
-    </div> -->
+    </div>
 
     <!-- POLYGON -->
-    <script src="polygon.js"></script>
-    <p>Change color of this polygon:</p>
-    <input type="color" id="color" value="#112233"></input>
+    <div id="displayPolygon" style="display:none;">
+        <!-- <script src="line.js"></script> -->
+        <p>Change color of this polygon:</p>
+        <input type="color" id="color"></input>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="all_combined.js"></script>
 
 
 </body>
